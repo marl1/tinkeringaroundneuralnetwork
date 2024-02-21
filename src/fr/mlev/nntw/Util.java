@@ -1,11 +1,24 @@
 package fr.mlev.nntw;
 
 import java.util.List;
+import java.util.function.DoubleFunction;
 
 public class Util {
 	public static double sigmoid(double in) {
 	//	in = Math.abs(in);
 		return 1 / (1 + Math.exp(-in));
+	}
+	
+	
+	//from https://stackoverflow.com/questions/40657622/neural-network-activation-function
+	public static double relu(double in) {
+		DoubleFunction<Double> relu = x -> Math.max(0, x);
+		DoubleFunction<Double> reluDer = x -> {
+		    if (x < 0)
+		        return 0.0;
+		    return 1.0;
+		};
+		return reluDer.apply(in);
 	}
 
 	/**
