@@ -20,34 +20,42 @@ public class Main {
 	public static void main(String[] args) {
 		System.out.println("lol");
 		Network network = new Network(3);
-		Double[] data1 = {180.0, 80.0, 10.0}; //180cm, 80kg, voix grave
-		Double[] data2 = {190.0, 85.0, 12.0};
-		Double[] data3 = {170.0, 76.0, 9.0};
-		Double[] data3b = {173.0, 77.0, 25.0};
-		Double[] data4 = {150.0, 46.0, 60.0};
-		Double[] data5 = {149.0, 46.0, 65.0};
-		Double[] data6 = {151.0, 50.0, 62.0};
-		Double[] data7 = {145.0, 42.0, 69.0};
+		Double[] data1 = {30.0, 500.0, 10.0}; //30cm, 500g, not acidic=cucumber
+		Double[] data2 = {29.0, 480.0, 12.0};
+		Double[] data3 = {31.0, 510.0, 9.0};
+		Double[] data3b = {15.0, 250.0, 45.0}; // half cucumber
+		Double[] data4 = {5.0, 6.0, 75.0}; //5cm, 6g, quite acidic=pickle
+		Double[] data5 = {5.0, 5.0, 77.0};
+		Double[] data6 = {4.0, 3.0, 78.0};
+		Double[] data7 = {3.0, 2.0, 76.0};
 		
 		List<Double[]> data = List.of(data1, data2, data3, data3b, data4, data5, data6, data7);
-		List<Double> answers = Arrays.asList(1.0, 1.0,1.0,1.0,0.0,0.0, 0.0, 0.0);
+		List<Double> answers = Arrays.asList(1.0, 1.0, 1.0, 0.5 ,0.0, 0.0, 0.0, 0.0);
 		network.train(data, answers);
-		DecimalFormat df = new DecimalFormat("#.#####%");
-		System.out.print("Is it a man ? 181cm, 82kg, voix très grave. ");
-		Double[] test1 = {181.0, 82.0, 8.0}; //181cm, 82kg, voix très grave
-		System.out.println(df.format(network.interrogate(test1)));
+		DecimalFormat df = new DecimalFormat("#.###########%");
+		System.out.print("Is it a pickle? 31cm, 490g, not acidic ");
+		Double[] q1 = {31.0, 490.0, 8.0}; //181cm, 82kg, voix très grave
+		System.out.println(df.format(network.interrogate(q1)));
 		
-		System.out.print("Is it a man ? 171cm, 78kg, voix assez grave. ");		
-		Double[] test2 = {171.0, 78.0, 12.0};
-		System.out.println(df.format(network.interrogate(test2)));
+		System.out.print("Is it a pickle? 29cm, 480g, not acidic ");		
+		Double[] q2 = {29.0, 480.0, 12.0};
+		System.out.println(df.format(network.interrogate(q2)));
 		
-		System.out.print("Is it a man ? 160cm, 58kg, voix très légèrement aigue. ");		
-		Double[] test3 = {147.0, 58.0, 55.0};
-		System.out.println(df.format(network.interrogate(test3)));
+		System.out.print("Is it a pickle? 30cm, 510g, not acidic ");		
+		Double[] q3 = {30.0, 510.0, 10.0};
+		System.out.println(df.format(network.interrogate(q3)));
 		
-		System.out.print("Is it a man ? 147cm, 51kg, voix un peu aigue. ");		
-		Double[] test4 = {147.0, 51.0, 62.0};
-		System.out.println(df.format(network.interrogate(test4)));
+		System.out.print("Is it a pickle? 15cm, 240g, midly acidic ");		
+		Double[] q4 = {15.0, 240.0, 240.0};
+		System.out.println(df.format(network.interrogate(q4)));
+		
+		System.out.print("Is it a pickle? 3cm, 5g, acidic ");		
+		Double[] q5 = {3.0, 5.0, 72.0};
+		System.out.println(df.format(network.interrogate(q5)));
+
+		System.out.print("Is it a pickle? 4cm, 5g, acidic ");		
+		Double[] q6 = {4.0, 5.0, 70.0};
+		System.out.println(df.format(network.interrogate(q6)));
 		
 	}
 	

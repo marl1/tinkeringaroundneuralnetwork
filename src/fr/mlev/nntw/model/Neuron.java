@@ -108,6 +108,11 @@ public class Neuron implements Mutable {
 	public Double getPreviousSum() {
 		return previousSum;
 	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(this.hashCode());
+	}
 	
 	
 	

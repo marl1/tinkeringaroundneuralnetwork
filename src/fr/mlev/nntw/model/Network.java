@@ -9,15 +9,20 @@ import fr.mlev.nntw.Util;
 
 public class Network {
 
-	List<Neuron> inputLayer = new ArrayList<>(); //créée dynamiquement
-	List<Neuron> hiddenLayer = List.of(new Neuron(), new Neuron(), new Neuron());
+	List<Neuron> inputLayer = new ArrayList<>();
+	List<Neuron> hiddenLayer = new ArrayList<>();
 	List<Neuron> ouputLayer = List.of(new Neuron());
 	
 	List<Neuron> allNeurons = new ArrayList<>();
+	List<Synapse> allSynapses = new ArrayList<>();
 	
     public Network(int tailleInput) {
     	for(int i=0;i<tailleInput;i++) {
     		inputLayer.add(new Neuron());
+    	}
+    	
+    	for(int i=0;i<(Math.ceil(tailleInput/2)+1);i++) { // For now let's say that the hidden layer have half the neurons of the input layer+1. Totally arbitrary.
+    		hiddenLayer.add(new Neuron());
     	}
     	
     	allNeurons.addAll(inputLayer);
@@ -25,28 +30,29 @@ public class Network {
     	allNeurons.addAll(ouputLayer);
     	
     	for(Neuron neuron:inputLayer) {
-    		System.out.println("---");
         	for(Neuron nextNeuron:hiddenLayer) {
-        		System.out.println("adding syn to hidden layer");
         		Synapse synapse = new Synapse(neuron, nextNeuron);
+        		allSynapses.add(synapse);
         		neuron.getOutgoingSynapses().add(synapse);
         		nextNeuron.getIngoingSynapses().add(synapse);
         	}
     	}
     	
     	for(Neuron neuron:hiddenLayer) {
-    		System.out.println("---");
         	for(Neuron nextNeuron:ouputLayer) {
-        		System.out.println("adding syn to output layer");
         		Synapse synapse = new Synapse(neuron, nextNeuron);
+        		allSynapses.add(synapse);
         		neuron.getOutgoingSynapses().add(synapse);
         		nextNeuron.getIngoingSynapses().add(synapse);
         	}
     	}
+    	
+    	graphvizGeneration(allSynapses);
+    	
     	System.out.println("Network has been set up.");
 	}
-    
-    public Double interrogate(Double[] valuesToCompute) {
+
+	public Double interrogate(Double[] valuesToCompute) {
     	for(int i=0;i<valuesToCompute.length;i++) {
     		//System.out.println("propagate");
     		inputLayer.get(i).input(valuesToCompute[i]);
@@ -65,7 +71,7 @@ public class Network {
 	public void train(List<Double[]> data, List<Double> answers){
 		Random random = new Random();
 		Double bestEpochLoss = null;
-		for (int epoch = 0; epoch < 100000; epoch++){
+		for (int epoch = 0; epoch < 500000; epoch++){
 			// adapt neuron
 			Neuron epochNeuron = allNeurons.get(random.nextInt(allNeurons.size()));
 			Synapse epochSynapse = null;
@@ -102,6 +108,14 @@ public class Network {
 			}
 			if (epoch % 100 == 0) System.out.println(String.format("Epoch: %s | bestEpochLoss: %.15f | thisEpochLoss: %.15f", epoch, bestEpochLoss, thisEpochLoss));
 		}
+	}
+
+    private void graphvizGeneration(List<Synapse> allSynapses) {
+    	System.out.println("digraph Network {");
+    	for(Synapse synapse : allSynapses) {
+    		System.out.println(synapse.getStartingNeuron() + "->" + synapse.getEndingNeuron());
+    	}
+    	System.out.println("}");
 	}
 
 }
