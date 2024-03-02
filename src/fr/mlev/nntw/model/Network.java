@@ -70,19 +70,19 @@ public class Network {
 	 */
 	public void train(List<Double[]> data, List<Double> answers){
 		Random random = new Random();
-		Double bestEpochLoss = null;
+		Double bestEpochLoss = 99999.0;
 		for (int epoch = 0; epoch < 500000; epoch++){
 			// adapt neuron
 			Neuron epochNeuron = allNeurons.get(random.nextInt(allNeurons.size()));
-			Synapse epochSynapse = null;
+			Synapse epochSynapse = null; // we can mutate this neuron or one of his outgoing synapse but they don't ALL have an outgoing synapse (the last layer don't have any)
 			if (epochNeuron.getOutgoingSynapses().size() > 0) {
 				epochSynapse = epochNeuron.getOutgoingSynapses().get(random.nextInt(epochNeuron.getOutgoingSynapses().size()));
 			}
 			Mutable mutable;
-			if(epochSynapse !=null && random.nextInt(1) == 1) {
+			if(epochSynapse !=null && random.nextInt(1) == 1) { // if this neuron has an outgoing synapse, 50/50 chances that we modify the synapse or the neuron 
 				mutable = epochSynapse;
 			}else {
-				mutable = epochNeuron;
+				mutable = epochNeuron; // if no outgoing synapse or if we picked 0 at the 50/50 chances we modify the neuron
 			}
 			mutable.mutate();
 
@@ -94,18 +94,14 @@ public class Network {
 			}
 			Double thisEpochLoss = Util.meanSquareLoss(answers, predictions);
 
-			if (bestEpochLoss == null){
-				bestEpochLoss = thisEpochLoss;
-				mutable.remember();
+			if (thisEpochLoss < bestEpochLoss){ // if we were closer to the solution than the last epoch...
+				bestEpochLoss = thisEpochLoss; // ...we save how close we are to the solution now
+				mutable.remember();//... we save the neuron/synapse values.
+				backPropagate(thisEpochLoss);
 			} else {
-				if (thisEpochLoss < bestEpochLoss){ // if we were closer to the solution than the last epoch...
-					bestEpochLoss = thisEpochLoss; // ...we save how close we are to the solution now
-					epochNeuron.remember();//... we save the neuron values.
-					if (epochSynapse != null) epochSynapse.remember();
-				} else {
-					mutable.forget();
-				}
+				mutable.forget();
 			}
+
 			if (epoch % 100 == 0) System.out.println(String.format("Epoch: %s | bestEpochLoss: %.15f | thisEpochLoss: %.15f", epoch, bestEpochLoss, thisEpochLoss));
 		}
 	}
@@ -117,5 +113,11 @@ public class Network {
     	}
     	System.out.println("}");
 	}
+    
+    private void backPropagate(Double thisEpochLoss) {
+    	for(Neuron neuron:allNeurons) {
+    		neuron.backPropagation(thisEpochLoss);
+    	}
+    }
 
 }

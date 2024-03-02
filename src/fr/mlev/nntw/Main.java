@@ -46,7 +46,7 @@ public class Main {
 		System.out.println(df.format(network.interrogate(q3)));
 		
 		System.out.print("Is it a pickle? 15cm, 240g, midly acidic ");		
-		Double[] q4 = {15.0, 240.0, 240.0};
+		Double[] q4 = {15.0, 240.0, 52.0};
 		System.out.println(df.format(network.interrogate(q4)));
 		
 		System.out.print("Is it a pickle? 3cm, 5g, acidic ");		

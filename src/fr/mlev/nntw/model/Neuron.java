@@ -1,13 +1,16 @@
 package fr.mlev.nntw.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import fr.mlev.nntw.Util;
 
 /**
- * A neuro takes 2 input values. As soon as they enter, it multiplies them by a
+ * A neuron takes 2 input values. As soon as they enter, it multiplies them by a
  * random value.
  * 
  * It then combines them somehow with a function. The function is called an
@@ -30,6 +33,7 @@ public class Neuron implements Mutable {
 	private Double bias;
 
 	private List<Synapse> ingoingSynapses = new ArrayList<>();
+	private Map<Synapse, Double> ingoingSynapsesLastSum = new HashMap<>();
 	
 	private List<Synapse> outgoingSynapses = new ArrayList<>();
 	
@@ -52,12 +56,13 @@ public class Neuron implements Mutable {
 
 	public void input(double input) {		
 		nbrInputReceived++;
-		sum += input; //on accumule l'input jusqu'à ce qu'on ait reçu autant d'input qu'on a de synapse en entrée
+		sum += input; //accumulating inputs until we received as much input as we have incoming synapses
 		if (ingoingSynapses.size() == 0 || nbrInputReceived == ingoingSynapses.size()) {
 			nbrInputReceived = 0;
 			sum = Util.sigmoid(sum * this.bias);
 			for(Synapse synapse:outgoingSynapses) {
 				synapse.carry(sum);
+				ingoingSynapsesLastSum.put(synapse, sum);
 				sum = 0.0;
 			}
 			if (outgoingSynapses.size() == 0) {
@@ -66,6 +71,15 @@ public class Neuron implements Mutable {
 			}
 		}
 		//System.out.println(sum);
+	}
+	
+	public void backPropagation(double epochLoss) {
+		for(Entry<Synapse, Double> synapseAndLastSum:ingoingSynapsesLastSum.entrySet()) {
+			Synapse synapse = synapseAndLastSum.getKey();
+			Double synapseLastSum = synapseAndLastSum.getValue();
+			double valueToApplyToWeight = synapse.weight * (-epochLoss) * synapseLastSum * epochLoss * (1-epochLoss);
+			synapse.weight = synapse.weight + valueToApplyToWeight; 
+		}
 	}
 
 	/**
